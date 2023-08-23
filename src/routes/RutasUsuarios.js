@@ -195,13 +195,17 @@ class RutasUsuarios {
                 return res.status(401).send()
             }else{
                 var pass = crypto.randomBytes(4);
-                let asunto = 'olvido de contraseña en unavisuales';
-                let contenido = 'Hola ' + req.body.apodo + ', tu nueva contraseña es: ' + pass.toString('hex') + ' .Si nunca solicitaste una nueva contraseña'
-                contenido += ' entonces otra persona esta en conocimiento de tu apodo y tu dirección de mail registrados en nuestro sitio.';
-                mailer(req.body.mail,asunto,contenido);
                 bcrypt.hash(pass.toString('hex'), 10, (err, hash) => { 
                     if (err) throw ({ code: 500, msj: 'Tuvimos un inconviente, intenta mas tarde' });
                     Usuarios.update({contrasenia:hash},{where:{idUsuario:user1[0].idUsuario}});
+                });                           
+                const resend = new Resend(process.env.SENDER_KEY);
+                resend.emails.send({
+                    from: process.env.MAIL_HOST,
+                    to: req.body.mail,
+                    subject: 'Olvido de contraseña en unavisuales',
+                    html:'Hola ' + req.body.apodo + ', tu nueva contraseña es: ' + pass.toString('hex') + ' .Si nunca solicitaste una nueva contraseña'
+                        +' entonces otra persona esta en conocimiento de tu apodo y tu dirección de mail registrados en nuestro sitio.'
                 });
                 res.status(201).send({ msj: 'Revisa tu correo para conocer tu nueva contraseña' })
             }            
