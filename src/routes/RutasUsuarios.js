@@ -12,7 +12,7 @@ const validator = require('validator');
 const {autenticacionjwt} = require('../middlewares/passport');
 const isAdmin = require('../middlewares/isAdmin');
 const jwt = require ('jsonwebtoken');
-import { Resend } from 'resend';
+const Resend = require('resend');
 
 class RutasUsuarios {
     constructor(){
